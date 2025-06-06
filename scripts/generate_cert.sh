@@ -5,7 +5,7 @@ set -e
 DOMAIN=$1
 
 export CF_Token="${CF_TOKEN}"
-export CF_Account_ID="${CF_ACCOUNT_ID}"
+# export CF_Account_ID="${CF_ACCOUNT_ID}"
 
 if [ -z "$DOMAIN" ]; then
   echo "Domain name is required"
