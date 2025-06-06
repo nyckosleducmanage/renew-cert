@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 jobs:
-  cert-job:
+  generate-cert-job:
     runs-on: ubuntu-latest
     environment: prod
     env:
@@ -22,7 +22,6 @@ jobs:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_KEYVAULT_NAME: ${{ secrets.AZURE_KEYVAULT_NAME }}
-      AZURE_CERT_NAME: ${{ secrets.AZURE_CERT_NAME }}
 
     steps:
       - name: Checkout
@@ -45,4 +44,8 @@ jobs:
         run: bash scripts/generate_cert.sh "${{ github.event.inputs.domain }}"
 
       - name: Check and upload to Azure Key Vault
-        run: bash scripts/upload_to_kv.sh "${{ github.event.inputs.domain }}" "$AZURE_KEYVAULT_NAME" "$AZURE_CERT_NAME"
+        run: |
+          DOMAIN="${{ github.event.inputs.domain }}"
+          CERT_NAME=$(echo "$DOMAIN" | sed 's/\./-/g')-cert
+          bash scripts/upload_to_kv.sh "$DOMAIN" "$AZURE_KEYVAULT_NAME" "$CERT_NAME"
+
