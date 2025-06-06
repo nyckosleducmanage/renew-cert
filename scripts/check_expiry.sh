@@ -27,7 +27,8 @@ for CERT_NAME in "${CERTS[@]}"; do
            --query 'tags.domain' -o tsv 2>/dev/null || true)
 
   if [[ -z "$DOMAIN" ]]; then
-    DOMAIN="${CERT_NAME//-/\.}"
+    base=${CERT_NAME%-cert}
+    DOMAIN="${base//-/\.}"
   fi
 
   [[ -z "$EXPIRY" ]] && continue
