@@ -41,11 +41,11 @@ for CERT_NAME in "${CERTS[@]}"; do
   fi
 done
 
-renew_json=$(jq 'sort' <<<"$renew_json")
+renew_json=$(jq -c 'sort' <<<"$renew_json")
 
 COUNT=$(jq 'length' <<<"$renew_json")
 if (( COUNT > MAX_RENEWALS )); then
-  renew_json=$(jq ".[0:$MAX_RENEWALS]" <<<"$renew_json")
+  renew_json=$(jq -c ".[0:$MAX_RENEWALS]" <<<"$renew_json")
 fi
 
 echo "renew_list=$renew_json" >>"$GITHUB_OUTPUT"
