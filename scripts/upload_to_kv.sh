@@ -3,40 +3,41 @@
 set -e
 
 DOMAIN=$1
-KV_NAME=$2
-CERT_NAME=$3
 
-if [[ -z "$DOMAIN" || -z "$KV_NAME" || -z "$CERT_NAME" ]]; then
-  echo "Usage: ./upload_to_kv.sh <domaine> <kv_name> <cert_name>"
+export CF_Token="${CF_TOKEN}"
+export CF_Account_ID="${CF_ACCOUNT_ID}"
+
+if [ -z "$DOMAIN" ]; then
+  echo "Domain name is required"
   exit 1
 fi
 
-az login --service-principal \
-  --username "$AZURE_CLIENT_ID" \
-  --password "$AZURE_CLIENT_SECRET" \
-  --tenant "$AZURE_TENANT_ID"
-
-EXISTING=$(az keyvault certificate show \
-  --vault-name "$KV_NAME" \
-  --name "$CERT_NAME" \
-  --query "attributes.expires" -o tsv 2>/dev/null || true)
-
-if [ -n "$EXISTING" ]; then
-  echo "🔎 Certificat déjà présent, expiration : $EXISTING"
-  EXP_DATE=$(date -d "$EXISTING" +%s)
-  NOW=$(date +%s)
-  if (( EXP_DATE > NOW )); then
-    echo "Certificat valid, no update."
-    exit 0
-  else
-    echo "Certificat expired, update in progress
-  fi
+# Installer acme.sh si nécessaire
+if [ ! -d "$HOME/.acme.sh" ]; then
+  curl https://get.acme.sh | sh
+  export PATH="$HOME/.acme.sh:$PATH"
 else
-  echo "No certificat, create new"
+  export PATH="$HOME/.acme.sh:$PATH"
 fi
 
-az keyvault certificate import \
-  --vault-name "$KV_NAME" \
-  --name "$CERT_NAME" \
-  --file output/${DOMAIN}.pfx \
-  --password ""
+# Changer de CA vers Let's Encrypt
+acme.sh --set-default-ca --server letsencrypt
+
+# Demande du certificat uniquement pour le sous-domaine
+acme.sh --issue --dns dns_cf -d "$DOMAIN" --keylength ec-256 --force
+
+# Création du dossier output
+mkdir -p output
+
+# Installation du certificat localement
+acme.sh --install-cert -d "$DOMAIN" \
+  --key-file output/${DOMAIN}.key \
+  --fullchain-file output/${DOMAIN}.crt \
+  --ecc
+
+# Conversion en PFX
+openssl pkcs12 -export \
+  -out output/${DOMAIN}.pfx \
+  -inkey output/${DOMAIN}.key \
+  -in output/${DOMAIN}.crt \
+  -passout pass:
