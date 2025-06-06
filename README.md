@@ -1,1 +1,49 @@
 # renew-cert
+
+
+
+name: Generate and Store Let's Encrypt Certificat
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Domain name (ex: roversafe.com)"
+        required: true
+        type: string
+
+jobs:
+  cert-job:
+    runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CF_TOKEN }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_KEYVAULT_NAME: ${{ secrets.AZURE_KEYVAULT_NAME }}
+      AZURE_CERT_NAME: ${{ secrets.AZURE_CERT_NAME }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Tools
+        run: |
+          sudo apt update
+          sudo apt install -y curl openssl socat
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          allow-no-subscriptions: true
+
+
+      - name: Generate certificat
+        run: bash scripts/generate_cert.sh "${{ github.event.inputs.domain }}"
+
+      - name: Check and upload to Azure Key Vault
+        run: bash scripts/upload_to_kv.sh "${{ github.event.inputs.domain }}" "$AZURE_KEYVAULT_NAME" "$AZURE_CERT_NAME"
