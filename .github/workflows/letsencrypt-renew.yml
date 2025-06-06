@@ -1,0 +1,72 @@
+name: Daily Let’s Encrypt Renewal
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  plan:
+    name: Detect expiring certs
+    runs-on: ubuntu-latest
+    outputs:
+      renew_list: ${{ steps.determine.outputs.renew_list }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Determine certificates to renew
+        id: determine
+        env:
+          AZURE_KEYVAULT_NAME: ${{ secrets.AZURE_KEYVAULT_NAME }}
+        run: |
+          bash scripts/check_expiry.sh "$AZURE_KEYVAULT_NAME"
+
+      - name: Log result
+        run: |
+          echo "Renew list → ${{ steps.determine.outputs.renew_list }}"
+
+  renew:
+    needs: plan
+    if: ${{ needs.plan.outputs.renew_list != '[]' }}
+    strategy:
+      matrix:
+        domain: ${{ fromJson(needs.plan.outputs.renew_list) }}
+      max-parallel: 1
+    runs-on: ubuntu-latest
+    environment: prod
+    env:
+      CF_TOKEN:             ${{ secrets.CF_TOKEN }}
+      AZURE_CLIENT_ID:      ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID:      ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_KEYVAULT_NAME:  ${{ secrets.AZURE_KEYVAULT_NAME }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ env.AZURE_CLIENT_ID }}
+          tenant-id: ${{ env.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Generate certificate
+        run: bash scripts/generate_cert.sh "${{ matrix.domain }}"
+
+      - name: Upload to Key Vault
+        run: |
+          DOMAIN="${{ matrix.domain }}"
+          CERT_NAME=$(echo "$DOMAIN" | sed 's/\./-/g')
+          bash scripts/upload_to_kv.sh "$DOMAIN" "$AZURE_KEYVAULT_NAME" "$CERT_NAME"

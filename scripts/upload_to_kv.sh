@@ -24,4 +24,6 @@ az keyvault certificate import \
   --vault-name "$VAULT_NAME" \
   --name "$CERT_NAME" \
   --file "$PFX_PATH" \
-  --password ""
+  --password "" \
+  --tags "domain=$DOMAIN"
+
