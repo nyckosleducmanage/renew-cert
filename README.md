@@ -32,7 +32,6 @@ You must configure the following secrets under **Repository Settings > Secrets a
 | Name                 | Description                                                                 |
 |----------------------|-----------------------------------------------------------------------------|
 | `CF_TOKEN`           | Cloudflare API Token with permissions to manage DNS records                |
-| `CF_ACCOUNT_ID`      | Cloudflare Account ID (optional for some DNS setups, safe to include)      |
 | `AZURE_CLIENT_ID`    | Client ID of your Azure AD App (used for federated auth via OIDC)          |
 | `AZURE_CLIENT_SECRET`| Client Secret (not used with OIDC login, but can be left for fallback)     |
 | `AZURE_TENANT_ID`    | Azure AD Tenant ID                                                         |
