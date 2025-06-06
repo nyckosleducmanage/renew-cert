@@ -16,6 +16,9 @@ mapfile -t CERTS < <(
 
 renew_json="[]"
 
+echo "WINDOW = ${THRESHOLD_MIN}-${THRESHOLD_MAX}  MAX = ${MAX_RENEWALS}"
+
+
 for CERT_NAME in "${CERTS[@]}"; do
 
   EXPIRY=$(az keyvault certificate show --vault-name "$VAULT_NAME" --name "$CERT_NAME" \
