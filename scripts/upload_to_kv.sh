@@ -3,41 +3,25 @@
 set -e
 
 DOMAIN=$1
+VAULT_NAME=$2
+CERT_NAME=$3
 
-export CF_Token="${CF_TOKEN}"
-export CF_Account_ID="${CF_ACCOUNT_ID}"
-
-if [ -z "$DOMAIN" ]; then
-  echo "Domain name is required"
+if [ -z "$DOMAIN" ] || [ -z "$VAULT_NAME" ] || [ -z "$CERT_NAME" ]; then
+  echo "Usage: $0 <domain> <keyvault_name> <cert_name>"
   exit 1
 fi
 
-# Installer acme.sh si nécessaire
-if [ ! -d "$HOME/.acme.sh" ]; then
-  curl https://get.acme.sh | sh
-  export PATH="$HOME/.acme.sh:$PATH"
-else
-  export PATH="$HOME/.acme.sh:$PATH"
+PFX_PATH="output/${DOMAIN}.pfx"
+
+if [ ! -f "$PFX_PATH" ]; then
+  echo "Error: Certificate file $PFX_PATH not found"
+  exit 1
 fi
 
-# Changer de CA vers Let's Encrypt
-acme.sh --set-default-ca --server letsencrypt
+echo "Uploading $PFX_PATH to Key Vault $VAULT_NAME with name $CERT_NAME..."
 
-# Demande du certificat uniquement pour le sous-domaine
-acme.sh --issue --dns dns_cf -d "$DOMAIN" --keylength ec-256 --force
-
-# Création du dossier output
-mkdir -p output
-
-# Installation du certificat localement
-acme.sh --install-cert -d "$DOMAIN" \
-  --key-file output/${DOMAIN}.key \
-  --fullchain-file output/${DOMAIN}.crt \
-  --ecc
-
-# Conversion en PFX
-openssl pkcs12 -export \
-  -out output/${DOMAIN}.pfx \
-  -inkey output/${DOMAIN}.key \
-  -in output/${DOMAIN}.crt \
-  -passout pass:
+az keyvault certificate import \
+  --vault-name "$VAULT_NAME" \
+  --name "$CERT_NAME" \
+  --file "$PFX_PATH" \
+  --password ""
