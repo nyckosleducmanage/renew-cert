@@ -54,9 +54,9 @@ letsencrypt-renew.yml is triggered every day. It renews certificates that:
 
 expire in ≤ 59 days and ≥ 50 days;
 
-have not exceeded the 50‑certs/day safeguard.
+have not exceeded the 50‑certs/day safeguard Cloudflare.
 
-No manual action is needed—just ensure the GitHub secrets remain valid.
+No manual action is needed/just ensure the GitHub secrets remain valid.
 
 ### Testing tips
 
