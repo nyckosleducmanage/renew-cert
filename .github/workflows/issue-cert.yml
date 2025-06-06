@@ -41,10 +41,8 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-
       - name: Generate certificat
         run: bash scripts/generate_cert.sh "${{ github.event.inputs.domain }}"
-
 
       - name: Check and upload to Azure Key Vault
         run: bash scripts/upload_to_kv.sh "${{ github.event.inputs.domain }}" "$AZURE_KEYVAULT_NAME" "$AZURE_CERT_NAME"
