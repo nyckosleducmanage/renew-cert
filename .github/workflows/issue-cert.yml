@@ -46,6 +46,6 @@ jobs:
       - name: Check and upload to Azure Key Vault
         run: |
           DOMAIN="${{ github.event.inputs.domain }}"
-          CERT_NAME=$(echo "$DOMAIN" | sed 's/\./-/g')-cert
+          CERT_NAME=$(echo "$DOMAIN" | sed 's/\./-/g')
           bash scripts/upload_to_kv.sh "$DOMAIN" "$AZURE_KEYVAULT_NAME" "$CERT_NAME"
 
