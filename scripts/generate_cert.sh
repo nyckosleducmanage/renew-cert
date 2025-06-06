@@ -17,6 +17,8 @@ if [ ! -d "$HOME/.acme.sh" ]; then
   export PATH="$HOME/.acme.sh:$PATH"
 fi
 
+export PATH="$HOME/.acme.sh:$PATH"
+
 acme.sh --set-default-ca --server letsencrypt
 
 acme.sh --issue --dns dns_cf -d "$DOMAIN" -d "*.$DOMAIN" --keylength ec-256 --force
