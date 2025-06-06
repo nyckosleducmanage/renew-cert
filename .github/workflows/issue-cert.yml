@@ -1,4 +1,4 @@
-name: Générer et stocker un certificat Let's Encrypt
+name: Generate and Store Let's Encrypt Certificat
 
 on:
   workflow_dispatch:
