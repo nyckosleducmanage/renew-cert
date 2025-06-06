@@ -18,6 +18,7 @@ This repository contains:
 
 - Supports **manual trigger** with custom domain input.
 - Renew them **automatically** on a daily schedule when they reach the renewal window (50–59 days before expiry) while observing the Let’s Encrypt rate‑limit.
+- **Parallel renewal** control how many renewals run at once by adjusting strategy.max-parallel in letsencrypt-renew.yml.
 - Uses **Cloudflare API** to validate domain ownership via DNS challenge.
 - Uses **OIDC-based authentication** with federated credentials to authenticate to Azure.
 - Certificate is stored in Azure Key Vault in `.pfx` format.
