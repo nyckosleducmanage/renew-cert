@@ -45,6 +45,7 @@ Run the GitHub Actions workflow manually from the UI:
 
 ```text
 Actions > Generate and Store Let's Encrypt Certificat > Run workflow
+```
 
 ## Personnal note
 
