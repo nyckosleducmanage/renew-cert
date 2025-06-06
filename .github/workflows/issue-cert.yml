@@ -42,7 +42,8 @@ jobs:
           allow-no-subscriptions: true
 
 
-
+      - name: Generate certificat
+        run: bash scripts/generate_cert.sh "${{ github.event.inputs.domain }}"
 
 
       - name: Check and upload to Azure Key Vault
