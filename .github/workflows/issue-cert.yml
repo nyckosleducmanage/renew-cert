@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       domain:
-        description: "Domain name (ex: sharkatlas.com)"
+        description: "Domain name (ex: mysubdomain.sharkatlas.com)"
         required: true
         type: string
 
