@@ -4,7 +4,7 @@ set -euo pipefail
 
 VAULT_NAME="${1?Key Vault name required}"
 
-THRESHOLD_MIN=90
+THRESHOLD_MIN=88
 THRESHOLD_MAX=92
 MAX_RENEWALS=50
 
