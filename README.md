@@ -17,6 +17,7 @@ This repository contains:
 ## Features
 
 - Supports **manual trigger** with custom domain input.
+- Renew them **automatically** on a daily schedule when they reach the renewal window (50–59 days before expiry) while observing the Let’s Encrypt rate‑limit.
 - Uses **Cloudflare API** to validate domain ownership via DNS challenge.
 - Uses **OIDC-based authentication** with federated credentials to authenticate to Azure.
 - Certificate is stored in Azure Key Vault in `.pfx` format.
@@ -46,6 +47,26 @@ Run the GitHub Actions workflow manually from the UI:
 ```text
 Actions > Generate and Store Let's Encrypt Certificat > Run workflow
 ```
+
+### Automatic renewal
+
+letsencrypt-renew.yml is triggered every day. It renews certificates that:
+
+expire in ≤ 59 days and ≥ 50 days;
+
+have not exceeded the 50‑certs/day safeguard.
+
+No manual action is needed—just ensure the GitHub secrets remain valid.
+
+### Testing tips
+
+To simulate a near‑expiry certificate, override the thresholds temporarily:
+
+Repo Settings → Variables → add THRESHOLD_MIN=88, THRESHOLD_MAX=92.
+
+Trigger the Daily Let’s Encrypt Renewal workflow manually.
+
+Remove the variables afterwards to revert to production behaviour.
 
 ## Personnal note
 

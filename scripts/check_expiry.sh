@@ -4,8 +4,8 @@ set -euo pipefail
 
 VAULT_NAME="${1?Key Vault name required}"
 
-THRESHOLD_MIN=88
-THRESHOLD_MAX=92
+THRESHOLD_MIN=50
+THRESHOLD_MAX=59
 MAX_RENEWALS=50
 
 mapfile -t CERTS < <(
