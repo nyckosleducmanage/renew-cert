@@ -1,4 +1,4 @@
-# Let's Encrypt Certificate Automation for Azure Key Vault
+# Automated Let's Encrypt Certificate for Azure Key Vault
 
 This project provides an automated workflow to generate Let's Encrypt SSL certificates for **subdomains**, using **Cloudflare DNS-01 challenge**, and securely **upload them to Azure Key Vault**.
 
