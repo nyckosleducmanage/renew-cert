@@ -35,7 +35,7 @@ for CERT_NAME in "${CERTS[@]}"; do
 
   EXP_SEC=$(date -d "$EXPIRY" +%s)
   NOW_SEC=$(date +%s)
-  DAYS_LEFT=$(( (EXP_SEC - NOW_SEC) / 86400 ))
+  DAYS_LEFT=$(( (EXP_SEC - NOW_SEC + 86399) / 86400 ))
 
   if (( DAYS_LEFT >= THRESHOLD_MIN && DAYS_LEFT <= THRESHOLD_MAX )); then
     renew_json=$(jq --arg domain "$DOMAIN" '. + [$domain]' <<<"$renew_json")
