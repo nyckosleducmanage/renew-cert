@@ -49,4 +49,8 @@ if (( COUNT > MAX_RENEWALS )); then
   renew_json=$(jq -c ".[0:$MAX_RENEWALS]" <<<"$renew_json")
 fi
 
-echo "renew_list=$renew_json" >>"$GITHUB_OUTPUT"
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  echo "renew_list=$renew_json" >>"$GITHUB_OUTPUT"
+else
+  echo "renew_list=$renew_json"
+fi
