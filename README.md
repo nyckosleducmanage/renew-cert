@@ -45,7 +45,7 @@ You must configure the following secrets under **Repository Settings > Secrets a
 Run the GitHub Actions workflow manually from the UI:
 
 ```text
-Actions > Generate and Store Let's Encrypt Certificat > Run workflow
+Actions > Generate and Store Let's Encrypt Certificate > Run workflow
 ```
 
 ### Automatic renewal
