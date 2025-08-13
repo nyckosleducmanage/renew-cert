@@ -18,7 +18,7 @@ jobs:
     outputs:
       renew_list: ${{ steps.determine.outputs.renew_list }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
@@ -54,7 +54,7 @@ jobs:
       AZURE_KEYVAULT_NAME:  ${{ secrets.AZURE_KEYVAULT_NAME }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Azure login (OIDC)
         uses: azure/login@v2
